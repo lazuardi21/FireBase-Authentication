@@ -1,0 +1,1222 @@
+﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">Grain Vision Image Upload</a>
+            </p>
+        </div>
+    </div>
+</header>
+<div id="body">
+    <!--
+    <form name="form1" method="post" action="api/docfile" enctype="multipart/form-data">
+        <div>
+            <label>
+                Brows File
+            </label>
+            <input name="myFile" type="file" />
+        </div>
+        <div>
+            <input type="submit" value="Upload" />
+        </div>
+    </form>-->
+
+    <div>
+        <label>
+            Browse File
+        </label>
+        <input id="file" name="myFile" type="file" accept="image/*" onchange="uploadImage3()" />
+    </div>
+    @*<div>
+            <button onclick="getInfo()">Click me</button>
+        </div>*@
+    <div>
+        <button onclick="uploadImage4()">Post Image</button>
+    </div>
+    @*<div>
+            <img src="" id="input" width="200" height="200">
+        </div>*@
+    <div>
+        <img src="~/Images/grainvision2020.png" id="output" width="200" height="200">
+    </div>
+    <div>
+        <p id="showData"></p>
+    </div>
+
+
+
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+
+        function loadImage(evt) {
+            var reader = new FileReader();
+
+            var filesToUpload = document.getElementById('file').files;
+            var file = filesToUpload[0];
+            console.log("file size: " + file.size);
+            reader = new FileReader();
+            // Create an image
+            var img = document.getElementById("input");
+            console.log("img: " + img);
+            reader.onload = function (e) {
+
+                //var image = new Image();
+                //image.src = file;
+
+                img.src = e.target.result;
+                console.log("img.src.length: " + img.src.length);
+
+                //var canvas = document.createElement("canvas");
+                ////var canvas = $("<canvas>", {"id":"testing"})[0];
+                //var ctx = canvas.getContext("2d");
+                //ctx.drawImage(img, 0, 0);
+
+                var MAX_WIDTH = 1000;
+                var MAX_HEIGHT = 1000;
+                var width = img.width;
+                var height = img.height;
+
+                console.log("Before:");
+                console.log("Width: " + width);
+                console.log("Height: " + height);
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                console.log("After: ");
+                console.log("Width: " + width);
+                console.log("Height: " + height);
+                //var ctx = canvas.getContext("2d");
+                //ctx.drawImage(img, 0, 0, width, height);
+
+                //var dataurl = canvas.toDataURL("image/png");
+                //document.getElementById('output').src = dataurl;
+
+                //console.log("Image has been compressed.");
+                //console.log("Sleep 500ms...");
+                //sleep(500);
+                //console.log("Sleep 500ms...");
+                //sleep(500);
+                //console.log("Sleep 500ms...");
+                //sleep(500);
+                //resolve(file);
+
+                //resolve(dataurl);
+
+            }
+
+            //apakaj ini bosa dihapus?
+            reader.readAsDataURL(file);
+        }
+
+        function getInfo() {
+            $.ajax({
+                type: "GET",
+                url: '/api/docfile3',
+                dataType: "json",
+                success: function (result) {
+                    // action to do after form submit
+                    alert(result);
+                },
+                error: function () {
+                    alert("Error while inserting data");
+                }
+            });
+        }
+
+        function uploadImage() {
+
+            //ResizeImageOld();
+
+            var file_data = $('#file').prop('files')[0];
+            var form_data = new FormData();
+            form_data.append('file', file_data);
+
+            //var resizedData = resizeImage5();
+
+            $.ajax({
+                type: "POST",
+                url: '/api/docfile',
+                dataType: "json",
+                data: form_data, //form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    // action to do after form submit
+                    var data = result.Items;
+                    data.forEach(function (item) {
+                        var grainType = item.GrainType.Name;
+                        var classificatiomType = item.GrainType.ScoreClassification;
+                        var identificationType = item.GrainType.ScoreIdentification;
+                        var grainSize = item.GrainSize.Name;
+                        var classificatiomSize = item.GrainSize.ScoreClassification;
+                        var identificationSize = item.GrainSize.ScoreIdentification;
+
+                    });
+
+                    //var myBooks = [
+                    //    {
+                    //        "Book ID": "1",
+                    //        "Book Name": "Computer Architecture",
+                    //        "Category": "Computers",
+                    //        "Price": "125.60"
+                    //    },
+                    //    {
+                    //        "Book ID": "2",
+                    //        "Book Name": "Asp.Net 4 Blue Book",
+                    //        "Category": "Programming",
+                    //        "Price": "56.00"
+                    //    },
+                    //    {
+                    //        "Book ID": "3",
+                    //        "Book Name": "Popular Science",
+                    //        "Category": "Science",
+                    //        "Price": "210.40"
+                    //    }
+                    //                    ]
+
+                    // EXTRACT VALUE FOR HTML HEADER.
+                    // ('Book ID', 'Book Name', 'Category' and 'Price')
+                    //var col = [];
+                    //for (var i = 0; i < myBooks.length; i++) {
+                    //    for (var key in myBooks[i]) {
+                    //        if (col.indexOf(key) === -1) {
+                    //            col.push(key);
+                    //        }
+                    //    }
+                    //}
+                    //var col = ["Book ID", "Book Name", "Category", "Price"];
+                    var col = ["No.", "Type", "Classification", "Identification", "Size", "Classification", "Identification"];
+
+                    // CREATE DYNAMIC TABLE.
+                    var table = document.createElement("table");
+
+                    // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+                    var tr = table.insertRow(-1);                   // TABLE ROW.
+
+                    for (var i = 0; i < col.length; i++) {
+                        var th = document.createElement("th");      // TABLE HEADER.
+                        th.innerHTML = col[i];
+                        tr.appendChild(th);
+                    }
+
+                    // ADD JSON DATA TO THE TABLE AS ROWS.
+                    for (var i = 0; i < result.Items.length; i++) {
+
+                        tr = table.insertRow(-1);
+
+                        var item = result.Items[i];
+
+                        var tabCell0 = tr.insertCell(-1);
+                        var rowNum = i + 1;
+                        tabCell0.innerHTML = rowNum;
+
+                        var tabCell1 = tr.insertCell(-1);
+                        var grainType = item.GrainType.Name;
+                        tabCell1.innerHTML = grainType;
+
+                        var tabCell2 = tr.insertCell(-1);
+                        var classificatiomType = Math.round(item.GrainType.ScoreClassification);
+                        tabCell2.innerHTML = classificatiomType;
+
+                        var tabCell3 = tr.insertCell(-1);
+                        var identificationType = Math.round(item.GrainType.ScoreIdentification);
+                        tabCell3.innerHTML = identificationType;
+
+                        var tabCell4 = tr.insertCell(-1);
+                        var grainSize = item.GrainSize.Name;
+                        tabCell4.innerHTML = grainSize;
+
+                        var tabCell5 = tr.insertCell(-1);
+                        var classificatiomSize = Math.round(item.GrainSize.ScoreClassification);
+                        tabCell5.innerHTML = classificatiomSize;
+
+                        var tabCell6 = tr.insertCell(-1);
+                        var identificationSize = Math.round(item.GrainSize.ScoreIdentification);
+                        tabCell6.innerHTML = identificationSize;
+
+                        //for (var j = 0; j < col.length; j++) {
+                        //    var tabCell = tr.insertCell(-1);
+                        //    var itemValue = result.Items[i][col[j]];
+                        //    tabCell.innerHTML = itemValue;
+                        //}
+                    }
+
+                    // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+                    var divContainer = document.getElementById("showData");
+                    divContainer.innerHTML = "";
+                    divContainer.appendChild(table);
+
+                    //alert(result);
+                },
+                error: function () {
+                    alert("Error while inserting data");
+                }
+            });
+        }
+
+        function ResizeImageOld() {
+
+            var filesToUpload = document.getElementById('file').files;
+            var file = filesToUpload[0];
+            var reader = new FileReader();
+            // Create an image
+            var img = document.createElement("img");
+
+            var filePromises = [];
+
+            var promise = new Promise(function (resolve, reject) {
+
+                // Create a file reader
+                // Set the image once loaded into file reader
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+
+                    var canvas = document.createElement("canvas");
+                    //var canvas = $("<canvas>", {"id":"testing"})[0];
+                    var ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+
+                    var MAX_WIDTH = 400;
+                    var MAX_HEIGHT = 400;
+                    var width = img.width;
+                    var height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    var ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    var dataurl = canvas.toDataURL("image/png");
+                    document.getElementById('output').src = dataurl;
+                    resolve("success");
+
+
+                }
+                // push promise to array
+                filePromises.push(promise)
+
+            });
+
+            promise.then(function (result) {
+                // Load files into file reader
+                reader.readAsDataURL(file);
+            }, function (err) {
+                console.log(err); // Error: "It broke"
+            });
+
+
+        }
+
+        function b64toBlob(b64Data, contentType, sliceSize) {
+            contentType = contentType || '';
+            sliceSize = sliceSize || 512;
+
+            var byteCharacters = atob(b64Data);
+            var byteArrays = [];
+
+            for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                var byteNumbers = new Array(slice.length);
+                for (var i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+
+                var byteArray = new Uint8Array(byteNumbers);
+
+                byteArrays.push(byteArray);
+            }
+
+            var blob = new Blob(byteArrays, { type: contentType });
+            return blob;
+        }
+
+        function dataURItoBlob(dataURI) {
+            // convert base64/URLEncoded data component to raw binary data held in a string
+            var byteString;
+            if (dataURI.split(',')[0].indexOf('base64') >= 0)
+                byteString = atob(dataURI.split(',')[1]);
+            else
+                byteString = unescape(dataURI.split(',')[1]);
+
+            // separate out the mime component
+            var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+            // write the bytes of the string to a typed array
+            var ia = new Uint8Array(byteString.length);
+            for (var i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+
+            return new Blob([ia], { type: mimeString });
+        }
+
+        function getFormattedDate() {
+            var d = new Date();
+
+            d = d.getFullYear() + "" + ('0' + (d.getMonth() + 1)).slice(-2) + "" + ('0' + d.getDate()).slice(-2) + "_" + ('0' + d.getHours()).slice(-2) + "" + ('0' + d.getMinutes()).slice(-2) + "" + ('0' + d.getSeconds()).slice(-2);
+
+            return d;
+        }
+
+        function sleep(milliseconds) {
+            const date = Date.now();
+            let currentDate = null;
+            do {
+                currentDate = Date.now();
+            } while (currentDate - date < milliseconds);
+        }
+
+        function uploadImage3() {
+            var success = 1;
+            console.log("Compressing image...");
+            var reader = new FileReader();
+            var promise = new Promise(
+                function (resolve, reject) {
+                    var filesToUpload = document.getElementById('file').files;
+                    var file = filesToUpload[0];
+                    console.log("file size: " + file.size);
+                    reader = new FileReader();
+                    // Create an image
+                    var img = document.createElement("img");
+                    console.log("img: " + img);
+                    reader.onload = function (e) {
+
+                        //var image = new Image();
+                        //image.src = file;
+
+                        img.src = e.target.result;
+                        img.style.height = '200px';
+                        img.style.width = '200px';
+
+                        console.log("img.src.length: " + img.src.length);
+
+                        var canvas = document.createElement("canvas");
+                        //var canvas = $("<canvas>", {"id":"testing"})[0];
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0);
+
+                        var MAX_WIDTH = 1000;
+                        var MAX_HEIGHT = 1000;
+                        var width = img.width;
+                        var height = img.height;
+
+                        console.log("Before:");
+                        console.log("Width: " + width);
+                        console.log("Height: " + height);
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        console.log("After: ");
+                        console.log("Width: " + width);
+                        console.log("Height: " + height);
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        var dataurl = canvas.toDataURL("image/png");
+                        document.getElementById('output').src = dataurl;
+
+                        console.log("Image has been compressed.");
+
+                        //console.log("Image has been compressed.");
+                        //console.log("Sleep 500ms...");
+                        //sleep(500);
+                        //console.log("Sleep 500ms...");
+                        //sleep(500);
+                        //console.log("Sleep 500ms...");
+                        //sleep(500);
+                        //resolve(file);
+
+                        resolve(file);
+
+                    }
+
+                    //apakaj ini bosa dihapus?
+                    reader.readAsDataURL(file);
+
+                });
+
+            // call our promise
+            var runPromise = function () {
+                promise
+                    .then(function (fulfilled) {
+                        // yay, you got a new phone
+                        reader.readAsDataURL(fulfilled);
+
+                    })
+                    .catch(function (error) {
+                        // ops, mom don't buy it
+                        console.log(error.message);
+                    });
+
+                return 0;
+            }
+
+            var run1 = runPromise();
+
+
+        }
+
+        function uploadImage4() {
+
+            var ImageURL = document.getElementById('output').src;
+            var block = ImageURL.split(";");
+            // Get the content type of the image
+            var contentType = block[0].split(":")[1];// In this case "image/gif"
+            // get the real base64 content of the file
+            var realData = block[1].split(",")[1];// In this case "R0lGODlhPQBEAPeoAJosM...."
+
+            //var blob = dataURItoBlob(realData);
+            var blob = b64toBlob(realData, contentType);
+
+            var form_data = new FormData();
+            form_data.append("image", blob, getFormattedDate() + ".jpg");
+
+            console.log("Uploading image...");
+            $.ajax({
+                type: "POST",
+                url: '/api/docfile3',
+                dataType: "json",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+
+                    var data = result.Items;
+                    console.log("Result has been retrieved.");
+                    data.forEach(function (item) {
+                        var grainType = item.GrainType.Name;
+                        var classificatiomType = item.GrainType.ScoreClassification;
+                        var identificationType = item.GrainType.ScoreIdentification;
+                        var grainSize = item.GrainSize.Name;
+                        var classificatiomSize = item.GrainSize.ScoreClassification;
+                        var identificationSize = item.GrainSize.ScoreIdentification;
+
+                    });
+
+                    var col = ["No.", "Type", "Classification", "Identification", "Size", "Classification", "Identification"];
+
+                    // CREATE DYNAMIC TABLE.
+                    var table = document.createElement("table");
+
+                    // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+                    var tr = table.insertRow(-1);                   // TABLE ROW.
+
+                    for (var i = 0; i < col.length; i++) {
+                        var th = document.createElement("th");      // TABLE HEADER.
+                        th.innerHTML = col[i];
+                        tr.appendChild(th);
+                    }
+
+                    // ADD JSON DATA TO THE TABLE AS ROWS.
+                    for (var i = 0; i < result.Items.length; i++) {
+
+                        tr = table.insertRow(-1);
+
+                        var item = result.Items[i];
+
+                        var tabCell0 = tr.insertCell(-1);
+                        var rowNum = i + 1;
+                        tabCell0.innerHTML = rowNum;
+
+                        var tabCell1 = tr.insertCell(-1);
+                        var grainType = item.GrainType.Name;
+                        tabCell1.innerHTML = grainType;
+
+                        var tabCell2 = tr.insertCell(-1);
+                        var classificatiomType = Math.round(item.GrainType.ScoreClassification);
+                        tabCell2.innerHTML = classificatiomType;
+
+                        var tabCell3 = tr.insertCell(-1);
+                        var identificationType = Math.round(item.GrainType.ScoreIdentification);
+                        tabCell3.innerHTML = identificationType;
+
+                        var tabCell4 = tr.insertCell(-1);
+                        var grainSize = item.GrainSize.Name;
+                        tabCell4.innerHTML = grainSize;
+
+                        var tabCell5 = tr.insertCell(-1);
+                        var classificatiomSize = Math.round(item.GrainSize.ScoreClassification);
+                        tabCell5.innerHTML = classificatiomSize;
+
+                        var tabCell6 = tr.insertCell(-1);
+                        var identificationSize = Math.round(item.GrainSize.ScoreIdentification);
+                        tabCell6.innerHTML = identificationSize;
+
+                        //for (var j = 0; j < col.length; j++) {
+                        //    var tabCell = tr.insertCell(-1);
+                        //    var itemValue = result.Items[i][col[j]];
+                        //    tabCell.innerHTML = itemValue;
+                        //}
+                    }
+
+                    // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+                    var divContainer = document.getElementById("showData");
+                    divContainer.innerHTML = "";
+                    divContainer.appendChild(table);
+
+                },
+                error: function () {
+                    alert("Error while inserting data");
+                }
+
+
+            })
+        .catch(function (error) {
+            // ops, mom don't buy it
+            console.log(error.message);
+        });
+
+
+        }
+
+
+        function uploadImage2() {
+            var success = 1;
+            console.log("Compressing image...");
+            var reader = new FileReader();
+            var promise = new Promise(
+                function (resolve, reject) {
+                    var filesToUpload = document.getElementById('file').files;
+                    var file = filesToUpload[0];
+                    console.log("file size: " + file.size);
+                    reader = new FileReader();
+                    // Create an image
+                    var img = document.createElement("img");
+                    console.log("img: " + img);
+                    reader.onload = function (e) {
+
+                        var image = new Image();
+                        image.src = file;
+                        console.log("img.src.length: " + image.src.length);
+
+                        img.src = e.target.result;
+                        console.log("img.src.length: " + img.src.length);
+
+                        var canvas = document.createElement("canvas");
+                        //var canvas = $("<canvas>", {"id":"testing"})[0];
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0);
+
+                        var MAX_WIDTH = 1000;
+                        var MAX_HEIGHT = 1000;
+                        var width = img.width;
+                        var height = img.height;
+
+                        console.log("Before:");
+                        console.log("Width: " + width);
+                        console.log("Height: " + height);
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        console.log("After: ");
+                        console.log("Width: " + width);
+                        console.log("Height: " + height);
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        var dataurl = canvas.toDataURL("image/png");
+                        document.getElementById('output').src = dataurl;
+
+                        console.log("Image has been compressed.");
+                        //console.log("Sleep 500ms...");
+                        //sleep(500);
+                        //console.log("Sleep 500ms...");
+                        //sleep(500);
+                        //console.log("Sleep 500ms...");
+                        //sleep(500);
+                        //resolve(file);
+                        resolve(dataurl);
+
+                    }
+
+                    //apakaj ini bosa dihapus?
+                    reader.readAsDataURL(file);
+
+                });
+
+            // call our promise
+            var runPromise = function () {
+                promise
+                    .then(function (fulfilled) {
+                        // yay, you got a new phone
+                        //reader.readAsDataURL(fulfilled);
+                        if (fulfilled != null) {
+                            var len = fulfilled.length;
+                            if (len < 10) {
+                                //console.log("Image url (len = " + len);
+                                console.log("Image url is not defined.");
+                                return -1;
+                            } else {
+                                console.log("Ready to upload image Url.");
+                                success = 1;
+                            }
+                        } else {
+                            console.log("Image url is null.");
+                        }
+                        var ImageURL = fulfilled;
+                        var block = ImageURL.split(";");
+                        // Get the content type of the image
+                        var contentType = block[0].split(":")[1];// In this case "image/gif"
+                        // get the real base64 content of the file
+                        var realData = block[1].split(",")[1];// In this case "R0lGODlhPQBEAPeoAJosM...."
+
+                        //var blob = dataURItoBlob(realData);
+                        var blob = b64toBlob(realData, contentType);
+
+                        var form_data = new FormData();
+                        form_data.append("image", blob, getFormattedDate() + ".jpg");
+
+                        //var form_data = new FormData();
+                        //form_data.append('file', fulfilled);
+
+                        console.log("Uploading image...");
+                        $.ajax({
+                            type: "POST",
+                            url: '/api/docfile',
+                            dataType: "json",
+                            data: form_data,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            success: function (result) {
+                                // action to do after form submit
+                                var data = result.Items;
+                                console.log("Result has been retrieved.");
+                                data.forEach(function (item) {
+                                    var grainType = item.GrainType.Name;
+                                    var classificatiomType = item.GrainType.ScoreClassification;
+                                    var identificationType = item.GrainType.ScoreIdentification;
+                                    var grainSize = item.GrainSize.Name;
+                                    var classificatiomSize = item.GrainSize.ScoreClassification;
+                                    var identificationSize = item.GrainSize.ScoreIdentification;
+
+                                });
+
+                                var col = ["No.", "Type", "Classification", "Identification", "Size", "Classification", "Identification"];
+
+                                // CREATE DYNAMIC TABLE.
+                                var table = document.createElement("table");
+
+                                // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+                                var tr = table.insertRow(-1);                   // TABLE ROW.
+
+                                for (var i = 0; i < col.length; i++) {
+                                    var th = document.createElement("th");      // TABLE HEADER.
+                                    th.innerHTML = col[i];
+                                    tr.appendChild(th);
+                                }
+
+                                // ADD JSON DATA TO THE TABLE AS ROWS.
+                                for (var i = 0; i < result.Items.length; i++) {
+
+                                    tr = table.insertRow(-1);
+
+                                    var item = result.Items[i];
+
+                                    var tabCell0 = tr.insertCell(-1);
+                                    var rowNum = i + 1;
+                                    tabCell0.innerHTML = rowNum;
+
+                                    var tabCell1 = tr.insertCell(-1);
+                                    var grainType = item.GrainType.Name;
+                                    tabCell1.innerHTML = grainType;
+
+                                    var tabCell2 = tr.insertCell(-1);
+                                    var classificatiomType = Math.round(item.GrainType.ScoreClassification);
+                                    tabCell2.innerHTML = classificatiomType;
+
+                                    var tabCell3 = tr.insertCell(-1);
+                                    var identificationType = Math.round(item.GrainType.ScoreIdentification);
+                                    tabCell3.innerHTML = identificationType;
+
+                                    var tabCell4 = tr.insertCell(-1);
+                                    var grainSize = item.GrainSize.Name;
+                                    tabCell4.innerHTML = grainSize;
+
+                                    var tabCell5 = tr.insertCell(-1);
+                                    var classificatiomSize = Math.round(item.GrainSize.ScoreClassification);
+                                    tabCell5.innerHTML = classificatiomSize;
+
+                                    var tabCell6 = tr.insertCell(-1);
+                                    var identificationSize = Math.round(item.GrainSize.ScoreIdentification);
+                                    tabCell6.innerHTML = identificationSize;
+
+                                    //for (var j = 0; j < col.length; j++) {
+                                    //    var tabCell = tr.insertCell(-1);
+                                    //    var itemValue = result.Items[i][col[j]];
+                                    //    tabCell.innerHTML = itemValue;
+                                    //}
+                                }
+
+                                // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+                                var divContainer = document.getElementById("showData");
+                                divContainer.innerHTML = "";
+                                divContainer.appendChild(table);
+
+                                //alert(result);
+                            },
+                            error: function () {
+                                alert("Error while inserting data");
+                            }
+                        });
+
+                    })
+                    .catch(function (error) {
+                        // ops, mom don't buy it
+                        console.log(error.message);
+                    });
+
+                return 0;
+            }
+
+            runPromise();
+            //var run1 = runPromise();
+            //console.log("Running result = " + run1);
+            //if (run1 < 0) {
+            //    console.log("Running again...");
+            //    var run2 = runPromise();
+            //}
+
+        }
+
+        function resizeImage5() {
+            var reader = new FileReader();
+            var promise = new Promise(
+                function (resolve, reject) {
+                    var filesToUpload = document.getElementById('file').files;
+                    var file = filesToUpload[0];
+                    reader = new FileReader();
+                    // Create an image
+                    var img = document.createElement("img");
+                    reader.onload = function (e) {
+                        img.src = e.target.result;
+
+                        var canvas = document.createElement("canvas");
+                        //var canvas = $("<canvas>", {"id":"testing"})[0];
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0);
+
+                        var MAX_WIDTH = 400;
+                        var MAX_HEIGHT = 400;
+                        var width = img.width;
+                        var height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        var dataurl = canvas.toDataURL("image/png");
+                        document.getElementById('output').src = dataurl;
+
+                        //resolve(file);
+                        resolve(dataurl);
+
+                    }
+
+                    //apakaj ini bosa dihapus?
+                    reader.readAsDataURL(file);
+
+                });
+
+            // call our promise
+            var runPromise = function () {
+                promise
+                    .then(function (fulfilled) {
+                        // yay, you got a new phone
+                        //reader.readAsDataURL(fulfilled);
+                        var dataurl = fulfilled;
+                        //console.log(fulfilled);
+                    })
+                    .catch(function (error) {
+                        // ops, mom don't buy it
+                        console.log(error.message);
+                    });
+            }
+
+            runPromise();
+        }
+
+        function resizeImage5() {
+            var reader = new FileReader();
+            var promise = new Promise(
+                function (resolve, reject) {
+                    var filesToUpload = document.getElementById('file').files;
+                    var file = filesToUpload[0];
+                    reader = new FileReader();
+                    // Create an image
+                    var img = document.createElement("img");
+                    reader.onload = function (e) {
+                        img.src = e.target.result;
+
+                        var canvas = document.createElement("canvas");
+                        //var canvas = $("<canvas>", {"id":"testing"})[0];
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0);
+
+                        var MAX_WIDTH = 400;
+                        var MAX_HEIGHT = 400;
+                        var width = img.width;
+                        var height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        var dataurl = canvas.toDataURL("image/png");
+                        document.getElementById('output').src = dataurl;
+
+                        //resolve(file);
+                        resolve(dataurl);
+
+                    }
+
+                    //apakaj ini bosa dihapus?
+                    reader.readAsDataURL(file);
+
+                });
+
+            // call our promise
+            var runPromise = function () {
+                promise
+                    .then(function (fulfilled) {
+                        // yay, you got a new phone
+                        //reader.readAsDataURL(fulfilled);
+                        var dataurl = fulfilled;
+                        return dataurl;
+                        //console.log(fulfilled);
+                    })
+                    .catch(function (error) {
+                        // ops, mom don't buy it
+                        console.log(error.message);
+                        return null;
+                    });
+            }
+
+            runPromise();
+        }
+
+
+        function resizeImage4() {
+            var filesToUpload = document.getElementById('file').files;
+            var file = filesToUpload[0];
+            var reader = new FileReader();
+            // Create an image
+            var img = document.createElement("img");
+
+
+            reader.onload = function (e) {
+                img.src = e.target.result;
+
+                var canvas = document.createElement("canvas");
+                //var canvas = $("<canvas>", {"id":"testing"})[0];
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+
+                var MAX_WIDTH = 400;
+                var MAX_HEIGHT = 400;
+                var width = img.width;
+                var height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                var dataurl = canvas.toDataURL("image/png");
+                document.getElementById('output').src = dataurl;
+
+            }
+
+            reader.readAsDataURL(file);
+
+
+        }
+
+
+        function resizeImage3() {
+            var filesToUpload = document.getElementById('file').files;
+            var file = filesToUpload[0];
+            var reader = new FileReader();
+            // Create an image
+            var img = document.createElement("img");
+
+            //var filePromises = [];
+
+            // Promise
+            var promise = new Promise(
+                function (resolve, reject) {
+
+                    reader.onload = function (e) {
+                        img.src = e.target.result;
+
+                        var canvas = document.createElement("canvas");
+                        //var canvas = $("<canvas>", {"id":"testing"})[0];
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0);
+
+                        var MAX_WIDTH = 400;
+                        var MAX_HEIGHT = 400;
+                        var width = img.width;
+                        var height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        var dataurl = canvas.toDataURL("image/png");
+                        document.getElementById('output').src = dataurl;
+                        resolve("success");
+
+
+                    }
+
+                    //resolve("success");
+
+                }
+            );
+
+
+            // call our promise
+            var runPromise = function () {
+                promise
+                    .then(function (fulfilled) {
+                        // yay, you got a new phone
+                        console.log(fulfilled);
+                    })
+                    .catch(function (error) {
+                        // ops, mom don't buy it
+                        console.log(error.message);
+                    });
+            }
+
+            runPromise();
+        }
+
+
+        function resizeImage2() {
+            var isMomHappy = true;
+
+            // Promise
+            var willIGetNewPhone = new Promise(
+                function (resolve, reject) {
+                    if (isMomHappy) {
+                        var phone = {
+                            brand: 'Samsung',
+                            color: 'black'
+                        };
+                        resolve(phone);
+                    } else {
+                        var reason = new Error('mom is not happy');
+                        reject(reason);
+                    }
+
+                }
+            );
+
+
+            // call our promise
+            var askMom = function () {
+                willIGetNewPhone
+                    .then(function (fulfilled) {
+                        // yay, you got a new phone
+                        console.log(fulfilled);
+                    })
+                    .catch(function (error) {
+                        // ops, mom don't buy it
+                        console.log(error.message);
+                    });
+            }
+
+            askMom();
+        }
+
+        function resizeImage() {
+            var filesToUpload = document.getElementById('file').files;
+            var file = filesToUpload[0];
+
+            var img = document.createElement("img");
+            var reader = new FileReader();
+            reader.onload = function (e) { img.src = e.target.result }
+            reader.readAsDataURL(file);
+
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+
+            var MAX_WIDTH = 800;
+            var MAX_HEIGHT = 600;
+            var width = img.width;
+            var height = img.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+
+            var dataurl = canvas.toDataURL("image/png");
+
+            return dataurl;
+
+        }
+
+        window.uploadPhotos = function (url) {
+            // Read in file
+            var file = event.target.files[0];
+
+            // Ensure it's an image
+            if (file.type.match(/image.*/)) {
+                console.log('An image has been loaded');
+
+                // Load the image
+                var reader = new FileReader();
+                reader.onload = function (readerEvent) {
+                    var image = new Image();
+                    image.onload = function (imageEvent) {
+
+                        // Resize the image
+                        var canvas = document.createElement('canvas'),
+                            max_size = 544,// TODO : pull max size from a site config
+                            width = image.width,
+                            height = image.height;
+                        if (width > height) {
+                            if (width > max_size) {
+                                height *= max_size / width;
+                                width = max_size;
+                            }
+                        } else {
+                            if (height > max_size) {
+                                width *= max_size / height;
+                                height = max_size;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+                        var dataUrl = canvas.toDataURL('image/jpeg');
+                        var resizedImage = dataURLToBlob(dataUrl);
+                        $.event.trigger({
+                            type: "imageResized",
+                            blob: resizedImage,
+                            url: dataUrl
+                        });
+                    }
+                    image.src = readerEvent.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        };
+
+
+    </script>
+}
+

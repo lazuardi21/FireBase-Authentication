@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "example1";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">Grain Vision File Upload</a>
+            </p>
+        </div>
+    </div>
+</header>
+<div id="body">
+    <!--
+    <form name="form1" method="post" action="api/docfile" enctype="multipart/form-data">
+        <div>
+            <label>
+                Brows File
+            </label>
+            <input name="myFile" type="file" />
+        </div>
+        <div>
+            <input type="submit" value="Upload" />
+        </div>
+    </form>-->
+
+    <div>
+        <label>
+            Browse File
+        </label>
+        <input name="myFile" type="file" />
+    </div>
+    <div>
+        <button onclick="myFunction()">Click me</button>
+    </div>
+    <div>
+        <p id="demo"></p>
+    </div>
+    <p>If you click on me, I will disappear.</p>
+    <p>Click me away!</p>
+    <p>Click me too!</p>
+
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("p").click(function () {
+                $(this).hide();
+            });
+        });
+
+        function myFunction() {
+            alert("coba");
+        }
+
+        function myFunction() {
+            document.getElementById("demo").innerHTML = "Hello World";
+        }
+
+        function aKontoSubmit() {
+            $.ajax({
+                type: "POST",
+                url: '/api/docfile',
+                data: $('form').serialize(),
+                dataType: "json",
+                success: function (result) {
+                    // action to do after form submit
+                },
+                error: function () {
+                    alert("Error while inserting data");
+                }
+            });
+        }
+
+    </script>
+}
+
+
+

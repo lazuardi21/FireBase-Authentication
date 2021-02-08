@@ -1,0 +1,141 @@
+﻿@model MvcApplication1.Models.SignUpModel
+
+@{
+    ViewBag.Title = "SignUp";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Register</h2>
+
+@Html.AntiForgeryToken()
+<html>
+<head>
+    <title>Phone Number Authentication with Firebase Web</title>
+</head>
+<body>
+    <h1>Enter number to create account</h1>
+    <form>
+        <input type="text" id="number" placeholder="+62812-3456-7890">
+        <div id="recaptcha-container"></div>
+        <button type="button" onclick="phoneAuth();">SendCode</button>
+    </form><br>
+    <h1>Enter Verification code</h1>
+    <form>
+        <input type="text" id="verificationCode" placeholder="Enter verification code">
+        <button type="button" onclick="codeverify();">Verify code</button>
+
+    </form>
+
+
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#config-web-app -->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    @*<script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-app.js"></script>*@
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use-->
+    @*<script src="https://firebase.google.com/docs/web/setup#available-libraries"></script>*@
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyCvklIOr1wa8sRFEIvefGe3E2msUcur1D0",
+            authDomain: "asp-mvc-with-android-d4bd2.firebaseapp.com",
+            databaseURL: "https://asp-mvc-with-android-d4bd2-default-rtdb.firebaseio.com",
+            projectId: "asp-mvc-with-android-d4bd2",
+            storageBucket: "asp-mvc-with-android-d4bd2.appspot.com",
+            messagingSenderId: "832490315189",
+            appId: "1:832490315189:web:9fb39dee06050c10e18dfc"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    @*<script src="~/JS/NumberAuthentication.js" type="module"></script>*@
+
+    <script>
+
+        window.onload = function () {
+            render();
+        };
+        function render() {
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+            recaptchaVerifier.render();
+        }
+    function phoneAuth() {
+            debugger;
+            //get the number
+            var number = document.getElementById('number').value;
+            //phone number authentication function of firebase
+            //it takes two parameter first one is number,,,second one is recaptcha
+            firebase.auth().signInWithPhoneNumber(number, window.recaptchaVerifier).then(function (confirmationResult) {
+                //s is in lowercase
+                window.confirmationResult = confirmationResult;
+                coderesult = confirmationResult;
+                console.log(coderesult);
+                alert("Message sent");
+            }).catch(function (error) {
+                alert(error.message);
+            });
+        }
+
+
+
+        function codeverify() {
+        debugger;
+        var code = document.getElementById('verificationCode').value;
+        coderesult.confirm(code).then(function (result) {
+            alert("Successfully registered");
+
+                var Data = {};
+                var Uid = result.user.uid;
+                var token = result.user.De;
+                const phone = result.user.phoneNumber;
+
+
+                Data.token = token;
+                Data.Uid = Uid;
+                Data.phone = phone;
+
+                var data = {
+                    "id": Data.Uid,
+                    "token": Data.token,
+                    "phone": Data.phone
+                };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SignUp", "Account")/',
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                complete: function (xmlHttp) {
+                    // xmlHttp is a XMLHttpRquest object
+                    alert(xmlHttp.status);
+                    //location.href = "http://localhost:50044/"
+                    location.href = '@Url.Action("Register", "Account", new { id = "x", phone = "z" })'.replace(/x/g, Uid).replace(/z/g, phone);
+                }
+                });
+
+                //window.location.href = '@Url.Action("Register", "Account", new { Id = "123", Token = "xxx", Phone = "123" })'.replace("123",Data.Uid);
+
+
+                //window.location.href = "http://localhost:50044/User/Create";
+
+                //var url = "User/Create?Uid=" + Uid;
+
+            }).catch(function (error) {
+                alert(error.message);
+            });
+        alert("Ok");
+         //window.location.href = '@Url.Action("Index", "Home")';
+        }
+    </script>
+
+</body>
+
+</html>
+
+<div>
+    @Html.ActionLink("Login", "Login", "Account")
+</div>
